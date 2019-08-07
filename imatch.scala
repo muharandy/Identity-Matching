@@ -63,6 +63,9 @@ FROM cross_data
 display(cleaned_data)
 cleaned_data.registerTempTable("cleaned_data");
 
+//----------Match Data-----------
+// Put code to match cross data here
+
 val jw = new JaroWinkler
 val l =  new NormalizedLevenshtein
 val d = new Damerau
