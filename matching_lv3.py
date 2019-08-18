@@ -65,11 +65,11 @@ def levenshtein_distance(word1, word2):
 get_similarity = F.udf(levenshtein_distance, DoubleType())
 
 master = spark.sql('SELECT * FROM dwhdb.fm_prep_master')
-master = master.repartition(10000)
+master = master.repartition(2000)
 master.registerTempTable("master")
 
 delta_lv2 = spark.sql("SELECT * FROM dwhdb.fm_delta_lv2")
-delta_lv2 = delta_lv2.repartition(10000)
+delta_lv2 = delta_lv2.repartition(2000)
 delta_lv2.registerTempTable("delta_lv2")
 
 prep_delta_lv3 = spark.sql("""
@@ -97,7 +97,7 @@ prep_delta_lv3 = (prep_delta_lv3
 match_lv3 = prep_delta_lv3.filter(prep_delta_lv3["similarity_nama"] >= 80).filter(prep_delta_lv3["similarity_nama_ibu"] >= 80)
 
 print(match_lv3.count())
-print(match_lv3.limit(10).show())
+#print(match_lv3.limit(10).show())
 
 #delta = spark.sql('SELECT * FROM dwhdb.fm_prep_delta')
 delta_lv3 = delta_lv2.exceptAll(match_lv3
@@ -107,8 +107,8 @@ delta_lv3 = delta_lv2.exceptAll(match_lv3
                                 .drop('similarity_nama')
                                 .drop('similarity_nama_ibu'))
 
-print(delta_lv3.count())
-print(delta_lv3.limit(10).show())
+#print(delta_lv3.count())
+#print(delta_lv3.limit(10).show())
 
 #print(prep_delta_lv3.count())
 
