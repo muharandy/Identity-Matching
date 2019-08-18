@@ -26,15 +26,16 @@ master.registerTempTable("master")
 
 delta.registerTempTable("delta")
 
-delta_lv1 = spark.sql("""
+match_lv1 = spark.sql("""
 SELECT /*+  BROADCASTJOIN(delta) */
-    master.clean_id
-    , master.clean_nama
-    , master.clean_tgl_lahir
-    , master.clean_nama_ibu
-    , master.clean_jenis_kelamin
-    , master.clean_tempat_lahir
-    , master.kode_pos
+	master.matching_id
+    , delta.clean_id
+    , delta.clean_nama
+    , delta.clean_tgl_lahir
+    , delta.clean_nama_ibu
+    , delta.clean_jenis_kelamin
+    , delta.kode_pos
+    , delta.clean_tempat_lahir
 FROM master
 INNER JOIN delta
 ON master.clean_id=delta.clean_id
@@ -42,6 +43,10 @@ AND master.clean_nama=delta.clean_nama
 AND master.clean_tgl_lahir=delta.clean_tgl_lahir
 """)
 
+#print(match_lv1.count())
+
+delta_lv1 = delta.exceptAll(match_lv1.drop('matching_id'))
+
 #print(delta_lv1.count())
 
-delta_lv1.write.format("parquet").partitionBy("kode_pos").mode("overwrite").saveAsTable("dwhdb.fm_delta_lv1")
+delta_lv1.write.format("parquet").partitionBy("clean_tempat_lahir").mode("overwrite").saveAsTable("dwhdb.fm_delta_lv1")

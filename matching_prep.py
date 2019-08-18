@@ -41,7 +41,8 @@ master.registerTempTable("master")
 
 prep_master = spark.sql("""
 SELECT
-      master.clean_id
+    master.matching_id
+    , master.clean_id
     , master.clean_nama
     , master.clean_tgl_lahir
     , master.clean_nama_ibu
@@ -51,7 +52,7 @@ SELECT
 FROM master
   """)
 
-prep_master.repartition("kode_pos").write.format("parquet").partitionBy("kode_pos").mode("overwrite").saveAsTable("dwhdb.fm_prep_master")
+prep_master.repartition("clean_tempat_lahir").write.format("parquet").partitionBy("clean_tempat_lahir").mode("overwrite").saveAsTable("dwhdb.fm_prep_master")
 
 delta = (delta
           .withColumn("clean_id",
