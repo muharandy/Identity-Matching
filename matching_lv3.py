@@ -116,5 +116,5 @@ delta_lv3 = delta_lv2.exceptAll(match_lv3
 
 #delta_lv3 = delta_lv3.filter(delta_lv3["similarity_nama"] >= 80).filter(delta_lv3["similarity_nama_ibu"] >= 80)
 
-#delta_lv3.write.format("parquet").partitionBy("d_clean_tempat_lahir").mode("overwrite").saveAsTable("dwhdb.fm_delta_lv3")
+#delta_lv3.write.format("parquet").partitionBy("lean_tempat_lahir").mode("overwrite").saveAsTable("dwhdb.fm_delta_lv3")
 
